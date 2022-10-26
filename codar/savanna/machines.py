@@ -128,6 +128,18 @@ class CrusherNode(MachineNode):
         return self.__dict__
 
 
+class OwensGPUNode(MachineNode):
+    def __init__(self):
+        MachineNode.__init__(self, 28, 1)
+
+    def validate_layout(self):
+        pass
+
+    def to_json(self):
+        self.__dict__['__info_type__'] = 'NodeConfig'
+        return self.__dict__
+
+
 class Machine(object):
     """Class to represent configuration of a specific Supercomputer or
     workstation, including the scheduler and runner used by the machine.
@@ -252,6 +264,15 @@ deepthought2_gpu = Machine('deepthought2_gpu', "slurm", "mpirung", DTH2GPUNode,
                            processes_per_node=20, node_exclusive=False,
                            scheduler_options=dict(project="", queue="default", custom=""))
 
+owens = Machine('owens', 'slurm', 'srun', MachineNode,
+                processes_per_node=28, node_exclusive=False,
+                scheduler_options=dict(project='', queue='batch',
+                                       reservation='', custom='--ntasks-per-node=28'))
+
+owens_gpu = Machine('owens_gpu', 'slurm', 'srun', OwensGPUNode,
+                processes_per_node=28, node_exclusive=False,
+                scheduler_options=dict(project='', queue='batch',
+                                       reservation='', custom='--gpus-per-node=1 --ntasks-per-node=28'))
 
 def get_by_name(name):
     assert name == name.lower()
