@@ -264,12 +264,12 @@ deepthought2_gpu = Machine('deepthought2_gpu', "slurm", "mpirung", DTH2GPUNode,
                            processes_per_node=20, node_exclusive=False,
                            scheduler_options=dict(project="", queue="default", custom=""))
 
-owens = Machine('owens', 'slurm', 'srun', MachineNode,
+owens = Machine('owens', 'slurm', 'mpiexec', MachineNode,
                 processes_per_node=28, node_exclusive=False,
                 scheduler_options=dict(project='', queue='batch',
                                        reservation='', custom='--ntasks-per-node=28'))
 
-owens_gpu = Machine('owens_gpu', 'slurm', 'srun', OwensGPUNode,
+owens_gpu = Machine('owens_gpu', 'slurm', 'mpiexec', OwensGPUNode,
                 processes_per_node=28, node_exclusive=False,
                 scheduler_options=dict(project='', queue='batch',
                                        reservation='', custom='--gpus-per-node=1 --ntasks-per-node=28'))
