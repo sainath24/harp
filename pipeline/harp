@@ -1,0 +1,52 @@
+#!/usr/bin/bash
+
+source $CONDA_HOME/bin/activate
+source activate harp_env
+
+export PIPELINE_HOME=$HOME/osc_apps/harp/1.0/pipeline
+
+application=$(cat $1 | jq '.application' | tr -d '"')
+
+cheetah_campaign_name=$(cat $1 | jq '.cheetah_campaign_name' | tr -d '"')
+cheetah_app_directory=$(cat $1 | jq '.cheetah_app_directory' | tr -d '"')
+cheetah_campaign_file=$(cat $1 | jq '.cheetah_campaign_file' | tr -d '"')
+cheetah_campaign_machine=$(cat $1 | jq '.cheetah_campaign_machine' | tr -d '"')
+
+echo "PIPELINE_HOME: $PIPELINE_HOME"
+echo "PIPELINE_CONFIG: $1"
+echo "APPLICATION: $application"
+echo "CHEETAH_CAMPAIGN_NAME: $cheetah_campaign_name"
+echo "CHEETAH_APP_DIRECTORY: $cheetah_app_directory"
+echo "CHEETAH_CAMPAIGN_FILE: $cheetah_campaign_file"
+echo "CHEETAH_CAMPAIGN_MACHINE: $cheetah_campaign_machine"
+# STEP 1
+# Create cheeta campaign
+cheetah create-campaign -a $cheetah_app_directory -o $cheetah_campaign_name -e $cheetah_campaign_file -m $cheetah_campaign_machine
+
+# STEP 2
+# TODO:
+# modify cheetah campaign submit to execute pipeline
+
+# STEP 3
+# execute cheetah submit script
+./$cheetah_campaign_name/$USER/run-all.sh
+
+# STEP 4
+status=$(cheetah status -s $cheetah_campaign_name)
+while [[ "$status" != *"DONE"* ]]; do 
+    sleep 5;
+    status=$(cheetah status -s $cheetah_campaign_name);
+done
+python $PIPELINE_HOME/modules/pipeline.py --module data_scraper --config $1
+
+# STEP 5
+# run data preprocessor
+python $PIPELINE_HOME/modules/pipeline.py --module data_preprocessor --config $1
+
+
+# STEP 6
+# run model trainer, let this read metadata and decide on making a new model.
+python $PIPELINE_HOME/modules/pipeline.py --module model_trainer --config $1
+
+# STEP 7
+# Run predictor
