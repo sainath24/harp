@@ -84,35 +84,17 @@ configure_step() {
   #     git clone https://github.com/CODARcode/cheetah.git
   # fi
   cp -r $srcdir/cheetah $installdir
-  cd $srcdir/cheetah 
+  # cd $srcdir/cheetah 
+  cd $installdir/cheetah
   pip install --editable .
   echo "cheetah is configured"
 
-<<comment
-  echo "inside configure step 1"
-
-  cd $installdir
-  if [ ! -d "$installdir/spack" ] 
-    then 
-        echo "Installing spack"
-        git clone -c feature.manyFiles=true https://github.com/spack/spack.git > /dev/null
-  fi
-
-  cd $installdir/spack/bin
-  module load gcc-compatibility/9.1.0  
-  echo "spack is configured"
-  ./spack compiler find
-
-  #install tau
-   echo "Installing TAU using spack"
-  ./spack install tau %gcc@9.1.0
-
-comment
+  echo "Installing tensorflow and other dependecies for the pipeline"
   conda install -c anaconda tensorflow-gpu
   conda install -c conda-forge psutil
-  conda install pytorch torchvision torchaudio pytorch-cuda=11.6 -c pytorch -c nvidia
   conda install pandas
   conda install scikit-learn
+  echo "DONE installing tensorflow and other dependecies for the pipeline"
 
   #Copy Pipeline to install directory
   cp -r $srcdir/pipeline $installdir/
