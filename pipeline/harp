@@ -15,6 +15,7 @@ cheetah_campaign_machine=$(cat $1 | jq '.cheetah_campaign_machine' | tr -d '"')
 echo "PIPELINE_HOME: $PIPELINE_HOME"
 echo "PIPELINE_CONFIG: $1"
 echo "APPLICATION: $application"
+echo "APPLICATION_CATEGORY: $application_category"
 echo "CHEETAH_CAMPAIGN_NAME: $cheetah_campaign_name"
 echo "CHEETAH_APP_DIRECTORY: $cheetah_app_directory"
 echo "CHEETAH_CAMPAIGN_FILE: $cheetah_campaign_file"
@@ -32,21 +33,26 @@ cheetah create-campaign -a $cheetah_app_directory -o $cheetah_campaign_name -e $
 ./$cheetah_campaign_name/$USER/run-all.sh
 
 # STEP 4
+echo "Starting to generate training data by executing runs <BEGIN>"
 status=$(cheetah status -s $cheetah_campaign_name)
 while [[ "$status" != *"DONE"* ]]; do 
     sleep 5;
     status=$(cheetah status -s $cheetah_campaign_name);
+    echo "\tgenerating training data by executing runs ..."
 done
-python $PIPELINE_HOME/modules/pipeline.py --module data_scraper --config $1
+echo "Done generating training data by executing runs <END>"
+
+
+#python $PIPELINE_HOME/modules/pipeline.py --module data_scraper --config $1
 
 # STEP 5
 # run data preprocessor
-python $PIPELINE_HOME/modules/pipeline.py --module data_preprocessor --config $1
+#python $PIPELINE_HOME/modules/pipeline.py --module data_preprocessor --config $1
 
 
 # STEP 6
 # run model trainer, let this read metadata and decide on making a new model.
-python $PIPELINE_HOME/modules/pipeline.py --module model_trainer --config $1
+#python $PIPELINE_HOME/modules/pipeline.py --module model_trainer --config $1
 
 # STEP 7
 # Run predictor
