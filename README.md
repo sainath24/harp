@@ -1,4 +1,4 @@
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) [CHANGE]
+[![License](https://img.shields.io/badge/License-BSD_3--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
 
 HARP - full form
 ==============================================================
@@ -58,4 +58,4 @@ Please open an issue on the [github issues](https://github.com/<PATH>/issues) pa
 
 License
 -------
-Harp is licensed under the <LICENSE NAME>
+Harp is licensed under the https://opensource.org/licenses/BSD-3-Clause
